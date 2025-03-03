@@ -19,6 +19,7 @@ import { API_URL } from "@/lib/constant";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuthStore } from "@/lib/store";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -33,6 +34,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
+  const { setUser } = useAuthStore((state) => state);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,6 +56,7 @@ export function LoginForm({
     if (!login.ok) {
       return toast.error(loginResponse.message);
     }
+    setUser({ name, room });
     setTimeout(() => {
       setLoading(false);
       router.replace("/");
