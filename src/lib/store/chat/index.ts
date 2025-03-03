@@ -1,10 +1,15 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type Message = {
-  name: string;
+type MessageContent = {
   content: string;
-  to: string; // "room" for group chat, socketId for private chat
+  to: string;
+  from: string;
+};
+
+type Message = {
+  name: string
+  content: MessageContent;
 };
 
 type ChatState = {

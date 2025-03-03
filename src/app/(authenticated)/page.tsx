@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function Home() {
   const auth_token = cookies().get("auth_token")?.value;
   return (
-    <div className="container py-20">
+    <div className="container">
       <Chat token={`${auth_token}`} />
     </div>
   );

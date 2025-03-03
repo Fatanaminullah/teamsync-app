@@ -1,6 +1,10 @@
-import { GalleryVerticalEnd } from "lucide-react";
+"use client";
+
+import { useAuthStore } from "@/lib/store";
+import { GalleryVerticalEnd, UserCircle } from "lucide-react";
 
 export default function Navbar() {
+  const { user } = useAuthStore();
   return (
     <div className="w-full fixed top-0 left-0">
       <div className="container flex justify-between items-center h-20">
@@ -10,6 +14,12 @@ export default function Navbar() {
           </div>
           TeamSync.
         </a>
+        {user.name && (
+          <div className="flex gap-2">
+            <UserCircle />
+            {user.name}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuthStore } from "@/lib/store";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -102,15 +103,21 @@ export function LoginForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Room</FormLabel>
-                <FormControl>
-                  <Input
-                    id="room"
-                    type="text"
-                    placeholder="Input your room"
-                    required
-                    {...field}
-                  />
-                </FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a room to enter" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="room1">Room 1</SelectItem>
+                    <SelectItem value="room2">Room 2</SelectItem>
+                    <SelectItem value="room3">Room 3</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <Navbar />
         <main className="mt-20">{children}</main>
-        <Toaster />
+        <Toaster position="top-right" />
       </body>
     </html>
   );
