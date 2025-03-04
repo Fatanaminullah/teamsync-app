@@ -1,23 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useChat } from "@/lib/hooks/useChat";
 import { useAuthStore, useChatStore } from "@/lib/store";
-import { CircleOff, Dot, UserCircle } from "lucide-react";
+import ReactPlayer from "react-player";
+import {
+  CircleOff,
+  Dot,
+  PhoneIncoming,
+  PhoneOff,
+  UserCircle,
+  Video,
+} from "lucide-react";
 import Image from "next/image";
 
 import logoMain from "../../../../public/img/img_logo-main.png";
 import { cn } from "@/lib/utils";
 
 const Chat = ({ token }: { token: string | null }) => {
-  const { sendMessage, onlineUsers, socketId } = useChat(token);
+  const {
+    sendMessage,
+    startCall,
+    acceptCall,
+    rejectCall,
+    callState,
+    caller,
+    onlineUsers,
+    myStream,
+    remoteStream,
+    socketId,
+  } = useChat(token);
   const { user: userAuth } = useAuthStore();
   const { messages } = useChatStore();
   const [message, setMessage] = useState("");
   const [activeChat, setActiveChat] = useState<string>();
+
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  // useEffect(() => {
+  //   console.log("heree", myStream);
+  //   if (localVideoRef.current && myStream) {
+  //     localVideoRef.current.srcObject = myStream;
+  //   }
+  //   if (remoteVideoRef.current && remoteStream.current) {
+  //     remoteVideoRef.current.srcObject = remoteStream.current;
+  //   }
+  // }, [myStream, remoteStream.current]);
 
   const handleSend = () => {
     if (message.trim()) {
@@ -25,14 +57,9 @@ const Chat = ({ token }: { token: string | null }) => {
       setMessage("");
     }
   };
-  console.log(
-    "meesss",
-    messages.filter(
-      (msg) =>
-        (msg.content.to === activeChat && msg.content.from === userAuth.name) ||
-        (msg.content.to === userAuth.name && msg.content.from === activeChat)
-    )
-  );
+  console.log("remoteStream", remoteStream);
+  console.log("myStream", myStream);
+  console.log("callState", callState);
   return (
     <div className="flex h-[calc(100vh_-_100px)]">
       {/* Sidebar */}
@@ -69,11 +96,12 @@ const Chat = ({ token }: { token: string | null }) => {
       {/* Chat Window */}
       {activeChat ? (
         <div className="flex-1 p-4 flex flex-col">
-          <h2 className="text-lg font-bold mb-4">{`Chat with ${activeChat} ${
-            Object.entries(onlineUsers).find(
-              ([name, user]) => name === activeChat
-            )?.[0]
-          }`}</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-bold mb-4">{`${activeChat}`}</h2>
+            <button onClick={() => startCall(activeChat)}>
+              <Video />
+            </button>
+          </div>
           <Card className="flex-1 overflow-y-auto p-4 h-4/6">
             <CardContent>
               {messages
@@ -127,6 +155,59 @@ const Chat = ({ token }: { token: string | null }) => {
         <div className="flex flex-1 flex-col items-center justify-center">
           <Image src={logoMain} alt="Image" className="w-60" />
           <h2>TeamSync App</h2>
+        </div>
+      )}
+
+      {/* Video Call UI */}
+      {callState === "receiving" && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <PhoneIncoming className="w-12 h-12 text-green-500" />
+            <p className="font-bold text-lg">{caller} is calling...</p>
+            <div className="flex space-x-4 mt-4">
+              <Button onClick={acceptCall} className="bg-green-500 text-white">
+                Accept
+              </Button>
+              <Button onClick={rejectCall} className="bg-red-500 text-white">
+                Reject
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {callState === "in-call" && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80">
+          <div className="w-[80vw] h-[80vh] bg-gray-900 rounded-lg p-4 flex flex-col items-center">
+            <div className="relative w-full flex-1">
+              {/* Remote Video */}
+              <div className="w-full h-full bg-black rounded-lg">
+                <ReactPlayer
+                  url={remoteStream!}
+                  playing
+                  height="100%"
+                  width="100%"
+                  style={{ transform: "scaleX(-1)" }}
+                />
+              </div>
+              {/* Local Video (Small Overlay) */}
+              <div className="absolute bottom-4 right-4 w-40 h-28 rounded-lg border border-white">
+                <ReactPlayer
+                  url={myStream!}
+                  playing
+                  height="100%"
+                  width="100%"
+                  style={{ transform: "scaleX(-1)" }}
+                />
+              </div>
+            </div>
+            <Button
+              onClick={rejectCall}
+              className="mt-4 bg-red-500 text-white flex items-center"
+            >
+              <PhoneOff className="mr-2" /> End Call
+            </Button>
+          </div>
         </div>
       )}
     </div>
