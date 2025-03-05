@@ -6,10 +6,17 @@ import { Input } from "@/components/ui/input";
 import { useSocket } from "@/lib/hooks/useSocket";
 import { useAuthStore, useChatStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { PhoneIncoming, PhoneOff, UserCircle, Video } from "lucide-react";
+import {
+  Mic,
+  MicOff,
+  PhoneIncoming,
+  PhoneOff,
+  UserCircle,
+  Video,
+  VideoOff,
+} from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import ReactPlayer from "react-player";
 
 import logoMain from "@/public/img/img_logo-main.png";
 
@@ -27,6 +34,10 @@ const Chat = ({ token }: { token: string | null }) => {
     endCall,
     remoteStream,
     myStream,
+    isAudioEnabled,
+    isVideoEnabled,
+    handleToggleAudio,
+    handleToggleVideo,
   } = useSocket(token);
 
   const { user: userAuth } = useAuthStore();
@@ -40,7 +51,8 @@ const Chat = ({ token }: { token: string | null }) => {
       setMessage("");
     }
   };
-  console.log("remote", remoteStream);
+  console.log("audio", isAudioEnabled);
+  console.log("video", isVideoEnabled);
   // console.log("my", myStream);
   // console.log("call", callState);
   return (
@@ -168,10 +180,10 @@ const Chat = ({ token }: { token: string | null }) => {
 
       {callState === "in-call" && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80">
-          <div className="w-[80vw] h-[80vh] bg-gray-900 rounded-lg p-4 flex flex-col items-center">
-            <div className="relative w-full flex-1">
+          <div className="w-[100vw] h-[100vh] bg-gray-900 p-4 flex flex-col items-center">
+            <div className="relative w-full h-full">
               {/* Remote Video */}
-              <div className="w-full h-full bg-black rounded-lg">
+              <div className="w-full h-full bg-black ">
                 {remoteStream && (
                   <video
                     ref={(video) => {
@@ -181,12 +193,14 @@ const Chat = ({ token }: { token: string | null }) => {
                     }}
                     autoPlay
                     playsInline
-                    className="w-full h-full"
+                    className="w-full h-full object-cover rounded-lg"
+                    style={{ transform: "scaleX(-1)" }}
+                    muted={!isAudioEnabled}
                   />
                 )}
               </div>
               {/* Local Video */}
-              <div className="absolute bottom-4 right-4 w-40 h-28 rounded-lg border border-white">
+              <div className="absolute bottom-4 right-4 w-60 h-48 rounded-lg">
                 {myStream && (
                   <video
                     ref={(video) => {
@@ -196,17 +210,46 @@ const Chat = ({ token }: { token: string | null }) => {
                     }}
                     autoPlay
                     playsInline
-                    className="w-full h-full"
+                    className="w-full h-full object-cover rounded-lg"
+                    style={{ transform: "scaleX(-1)" }}
+                    muted={!isAudioEnabled}
                   />
                 )}
               </div>
             </div>
-            <Button
-              onClick={endCall}
-              className="mt-4 bg-red-500 text-white flex items-center"
-            >
-              <PhoneOff className="mr-2" /> End Call
-            </Button>
+            <div className="absolute bottom-10 mt-4 flex justify-center gap-4">
+              <Button
+                onClick={handleToggleAudio}
+                variant="outline"
+                size="icon"
+                className={cn(
+                  "rounded-full w-12 h-12",
+                  !isAudioEnabled && "bg-gray-500 hover:bg-gray-600"
+                )}
+              >
+                {isAudioEnabled ? <Mic /> : <MicOff />}
+              </Button>
+
+              <Button
+                onClick={handleToggleVideo}
+                variant="outline"
+                size="icon"
+                className={cn(
+                  "rounded-full w-12 h-12",
+                  !isVideoEnabled && "bg-gray-500 hover:bg-gray-600"
+                )}
+              >
+                {isVideoEnabled ? <Video /> : <VideoOff />}
+              </Button>
+
+              <Button
+                onClick={endCall}
+                size="icon"
+                className="rounded-full w-12 h-12 bg-red-500 hover:bg-red-600"
+              >
+                <PhoneOff />
+              </Button>
+            </div>
           </div>
         </div>
       )}

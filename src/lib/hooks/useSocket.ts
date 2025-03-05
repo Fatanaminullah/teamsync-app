@@ -16,8 +16,8 @@ export const useSocket = (token: string | null) => {
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
   const [callState, setCallState] = useState<CallState>("idle");
   const [caller, setCaller] = useState<string | null>(null);
-  const [isAudioMute, setIsAudioMute] = useState(false);
-  const [isVideoOnHold, setIsVideoOnHold] = useState(false);
+  const [isAudioEnabled, setisAudioEnabled] = useState(true);
+  const [isVideoEnabled, setisVideoEnabled] = useState(true);
   const [remoteOffer, setRemoteOffer] = useState<RTCSessionDescriptionInit>();
 
   const sendMessage = (content: string, recipient?: string) => {
@@ -39,12 +39,12 @@ export const useSocket = (token: string | null) => {
 
   const handleToggleAudio = () => {
     peer.toggleAudio();
-    setIsAudioMute(!isAudioMute);
+    setisAudioEnabled(!isAudioEnabled);
   };
 
   const handleToggleVideo = () => {
     peer.toggleVideo();
-    setIsVideoOnHold(!isVideoOnHold);
+    setisVideoEnabled(!isVideoEnabled);
   };
 
   const startCall = useCallback(
@@ -140,7 +140,7 @@ export const useSocket = (token: string | null) => {
       },
     });
     setCallState("idle");
-    
+
   }, [myStream, socket]);
 
   const handleIncomingCall = async ({
@@ -336,16 +336,6 @@ export const useSocket = (token: string | null) => {
     }
   }, [peer]);
 
-  // useEffect(() => {
-  //   if (peer.peer) {
-  //     peer.peer.addEventListener("negotiationneeded", handleNegoNeeded);
-
-  //     return () => {
-  //       peer?.peer?.removeEventListener("negotiationneeded", handleNegoNeeded);
-  //     };
-  //   }
-  // }, [handleNegoNeeded, peer]);
-
   useEffect(() => {
     if (peer.peer) {
       // Set up track handler
@@ -389,5 +379,9 @@ export const useSocket = (token: string | null) => {
     endCall,
     remoteStream,
     myStream,
+    isAudioEnabled,
+    isVideoEnabled,
+    handleToggleAudio,
+    handleToggleVideo,
   };
 };
