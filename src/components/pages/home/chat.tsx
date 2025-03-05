@@ -1,55 +1,38 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { useChat } from "@/lib/hooks/useChat";
+import { Input } from "@/components/ui/input";
+import { useSocket } from "@/lib/hooks/useSocket";
 import { useAuthStore, useChatStore } from "@/lib/store";
-import ReactPlayer from "react-player";
-import {
-  CircleOff,
-  Dot,
-  PhoneIncoming,
-  PhoneOff,
-  UserCircle,
-  Video,
-} from "lucide-react";
-import Image from "next/image";
-
-import logoMain from "../../../../public/img/img_logo-main.png";
 import { cn } from "@/lib/utils";
+import { PhoneIncoming, PhoneOff, UserCircle, Video } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import ReactPlayer from "react-player";
+
+import logoMain from "@/public/img/img_logo-main.png";
 
 const Chat = ({ token }: { token: string | null }) => {
   const {
     sendMessage,
-    startCall,
-    acceptCall,
-    rejectCall,
+    onlineUsers,
+    socketId,
+
     callState,
     caller,
-    onlineUsers,
-    myStream,
+    acceptCall,
+    startCall,
+    rejectCall,
+    endCall,
     remoteStream,
-    socketId,
-  } = useChat(token);
+    myStream,
+  } = useSocket(token);
+
   const { user: userAuth } = useAuthStore();
   const { messages } = useChatStore();
   const [message, setMessage] = useState("");
   const [activeChat, setActiveChat] = useState<string>();
-
-  const localVideoRef = useRef<HTMLVideoElement | null>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
-
-  // useEffect(() => {
-  //   console.log("heree", myStream);
-  //   if (localVideoRef.current && myStream) {
-  //     localVideoRef.current.srcObject = myStream;
-  //   }
-  //   if (remoteVideoRef.current && remoteStream.current) {
-  //     remoteVideoRef.current.srcObject = remoteStream.current;
-  //   }
-  // }, [myStream, remoteStream.current]);
 
   const handleSend = () => {
     if (message.trim()) {
@@ -57,9 +40,9 @@ const Chat = ({ token }: { token: string | null }) => {
       setMessage("");
     }
   };
-  console.log("remoteStream", remoteStream);
-  console.log("myStream", myStream);
-  console.log("callState", callState);
+  console.log("remote", remoteStream);
+  // console.log("my", myStream);
+  // console.log("call", callState);
   return (
     <div className="flex h-[calc(100vh_-_100px)]">
       {/* Sidebar */}
@@ -74,12 +57,15 @@ const Chat = ({ token }: { token: string | null }) => {
               onClick={() => setActiveChat(name)}
               className="px-2 w-full !h-20 hover:!bg-background flex items-center justify-start"
             >
-              {user.online ? (
-                <div className="w-2 h-2 bg-green-500 rounded-full" />
-              ) : (
-                ""
-              )}
-              <UserCircle className="!w-10 !h-10" />
+              <div className="relative">
+                <UserCircle className="!w-10 !h-10" />
+                <div
+                  className={cn(
+                    "w-2 h-2 rounded-full absolute bottom-0 right-0",
+                    user.online ? "bg-green-500" : "bg-slate-400"
+                  )}
+                />
+              </div>
               <div className="flex flex-col items-start">
                 <p className="font-bold">{name}</p>
                 <p>
@@ -98,7 +84,11 @@ const Chat = ({ token }: { token: string | null }) => {
         <div className="flex-1 p-4 flex flex-col">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-bold mb-4">{`${activeChat}`}</h2>
-            <button onClick={() => startCall(activeChat)}>
+            <button
+              onClick={() => {
+                startCall(activeChat);
+              }}
+            >
               <Video />
             </button>
           </div>
@@ -182,27 +172,37 @@ const Chat = ({ token }: { token: string | null }) => {
             <div className="relative w-full flex-1">
               {/* Remote Video */}
               <div className="w-full h-full bg-black rounded-lg">
-                <ReactPlayer
-                  url={remoteStream!}
-                  playing
-                  height="100%"
-                  width="100%"
-                  style={{ transform: "scaleX(-1)" }}
-                />
+                {remoteStream && (
+                  <video
+                    ref={(video) => {
+                      if (video) {
+                        video.srcObject = remoteStream;
+                      }
+                    }}
+                    autoPlay
+                    playsInline
+                    className="w-full h-full"
+                  />
+                )}
               </div>
-              {/* Local Video (Small Overlay) */}
+              {/* Local Video */}
               <div className="absolute bottom-4 right-4 w-40 h-28 rounded-lg border border-white">
-                <ReactPlayer
-                  url={myStream!}
-                  playing
-                  height="100%"
-                  width="100%"
-                  style={{ transform: "scaleX(-1)" }}
-                />
+                {myStream && (
+                  <video
+                    ref={(video) => {
+                      if (video) {
+                        video.srcObject = myStream;
+                      }
+                    }}
+                    autoPlay
+                    playsInline
+                    className="w-full h-full"
+                  />
+                )}
               </div>
             </div>
             <Button
-              onClick={rejectCall}
+              onClick={endCall}
               className="mt-4 bg-red-500 text-white flex items-center"
             >
               <PhoneOff className="mr-2" /> End Call

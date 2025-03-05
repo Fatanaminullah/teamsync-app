@@ -5,10 +5,13 @@ type MessageContent = {
   content: string;
   to: string;
   from: string;
+  type: string;
+  offer?: any;
+  ans?: any;
 };
 
-type Message = {
-  name: string
+export type Message = {
+  name: string;
   content: MessageContent;
 };
 
