@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useCallback, useEffect, useState } from "react";
 import { Message, useAuthStore, useChatStore } from "../store";
 import { io, Socket } from "socket.io-client";
@@ -18,7 +20,6 @@ export const useSocket = (token: string | null) => {
   const [caller, setCaller] = useState<string | null>(null);
   const [isAudioEnabled, setisAudioEnabled] = useState(true);
   const [isVideoEnabled, setisVideoEnabled] = useState(true);
-  const [remoteOffer, setRemoteOffer] = useState<RTCSessionDescriptionInit>();
 
   const sendMessage = (content: string, recipient?: string) => {
     if (!user) return;
@@ -149,7 +150,6 @@ export const useSocket = (token: string | null) => {
     const { offer, from } = content;
     setCaller(from);
     setCallState("receiving");
-    setRemoteOffer(offer);
     console.log(`incoming call from ${from} with offer ${offer}`);
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
@@ -188,7 +188,7 @@ export const useSocket = (token: string | null) => {
   );
 
   const handleCallReceived = useCallback(
-    ({ content: { from, ans } }: Message) => {
+    ({ content: { ans } }: Message) => {
       peer.setRemoteDescription(ans, "handleCallReceived");
       console.log("Call Accepted by Caller!");
       sendStreams();

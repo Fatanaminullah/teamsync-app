@@ -1,13 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "./dropdown-menu";
+import { LogOut } from "lucide-react";
 import { Button } from "./button";
-import { LogOut, Moon, Sun, UserCircle } from "lucide-react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from "./dropdown-menu";
 
 const meta: Meta<typeof DropdownMenu> = {
   title: "UI/DropdownMenu",

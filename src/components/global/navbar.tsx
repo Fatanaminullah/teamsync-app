@@ -7,13 +7,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { logout } from "@/lib/actions/auth";
-import { useAuthStore, useChatStore } from "@/lib/store";
+import { useAuthStore } from "@/lib/store";
 import {
-  GalleryVerticalEnd,
   LogOut,
   Moon,
   Sun,
-  UserCircle,
+  UserCircle
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "../ui/button";

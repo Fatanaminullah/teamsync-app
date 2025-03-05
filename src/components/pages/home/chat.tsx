@@ -29,7 +29,6 @@ const Chat = ({ token }: { token: string | null }) => {
   const {
     sendMessage,
     onlineUsers,
-    socketId,
 
     callState,
     caller,
@@ -67,7 +66,7 @@ const Chat = ({ token }: { token: string | null }) => {
       >
         <h2 className="text-lg font-bold mb-4">Chats</h2>
         {Object.entries(onlineUsers)
-          ?.filter(([name, user]) => name !== userAuth.name)
+          ?.filter(([name]) => name !== userAuth.name)
           .map(([name, user]) => (
             <div
               key={user.socketId}
