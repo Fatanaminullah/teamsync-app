@@ -7,6 +7,7 @@ import { useSocket } from "@/lib/hooks/useSocket";
 import { useAuthStore, useChatStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import {
+  ChevronLeft,
   Mic,
   MicOff,
   PhoneIncoming,
@@ -51,51 +52,78 @@ const Chat = ({ token }: { token: string | null }) => {
       setMessage("");
     }
   };
-  console.log("audio", isAudioEnabled);
-  console.log("video", isVideoEnabled);
-  // console.log("my", myStream);
-  // console.log("call", callState);
+  console.log("messages", messages);
   return (
     <div className="flex h-[calc(100vh_-_100px)]">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-100 dark:bg-gray-800 p-4">
-        <h2 className="text-lg font-bold mb-4">Chats</h2>
+      <aside
+        className={cn(
+          "md:w-64 w-full md:bg-gray-100 dark:md:bg-gray-800 md:p-4",
+          activeChat ? "max-sm:invisible max-sm:hidden" : ""
+        )}
+      >
+        <h2 className="text-lg font-bold">Chats</h2>
         {Object.entries(onlineUsers)
           ?.filter(([name, user]) => name !== userAuth.name)
           .map(([name, user]) => (
-            <Button
+            <div
               key={user.socketId}
-              variant={activeChat === name ? "outline" : "ghost"}
-              onClick={() => setActiveChat(name)}
-              className="px-2 w-full !h-20 hover:!bg-background flex items-center justify-start"
+              className="max-sm:pb-1 border-b border-gray-200"
             >
-              <div className="relative">
-                <UserCircle className="!w-10 !h-10" />
-                <div
-                  className={cn(
-                    "w-2 h-2 rounded-full absolute bottom-0 right-0",
-                    user.online ? "bg-green-500" : "bg-slate-400"
-                  )}
-                />
-              </div>
-              <div className="flex flex-col items-start">
-                <p className="font-bold">{name}</p>
-                <p>
-                  {
-                    messages?.findLast((item) => item.content.from === name)
-                      ?.content.content
-                  }
-                </p>
-              </div>
-            </Button>
+              <Button
+                variant={activeChat === name ? "outline" : "ghost"}
+                onClick={() => setActiveChat(name)}
+                className="px-2 w-full !h-20 hover:!bg-background flex items-center justify-start"
+              >
+                <div className="relative">
+                  <UserCircle className="!w-10 !h-10" />
+                  <div
+                    className={cn(
+                      "w-2 h-2 rounded-full absolute bottom-0 right-0",
+                      user.online ? "bg-green-500" : "bg-slate-400"
+                    )}
+                  />
+                </div>
+                <div className="flex flex-col items-start">
+                  <p className="font-bold">{name}</p>
+                  <p>
+                    {
+                      messages?.findLast(
+                        (item) =>
+                          item.content.from === name ||
+                          (item.content.to === name &&
+                            item.content.from === userAuth.name)
+                      )?.content.content
+                    }
+                  </p>
+                </div>
+              </Button>
+            </div>
           ))}
       </aside>
 
       {/* Chat Window */}
       {activeChat ? (
-        <div className="flex-1 p-4 flex flex-col">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold mb-4">{`${activeChat}`}</h2>
+        <div
+          className={cn(
+            "flex-1 md:p-4 flex flex-col max-sm:translate-x-full transition-transform",
+            activeChat ? "max-sm:translate-x-0" : ""
+          )}
+        >
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-1">
+              <ChevronLeft
+                className="md:hidden"
+                onClick={() => setActiveChat("")}
+              />
+              <UserCircle className="!w-10 !h-10 md:hidden" />
+              <div className="flex flex-col">
+                <h2 className="text-lg font-bold">{`${activeChat}`}</h2>
+                <p className="text-xs md:hidden">
+                  {onlineUsers?.[activeChat]?.online ? "Online" : "Offline"}
+                </p>
+              </div>
+            </div>
             <button
               onClick={() => {
                 startCall(activeChat);
@@ -104,7 +132,7 @@ const Chat = ({ token }: { token: string | null }) => {
               <Video />
             </button>
           </div>
-          <Card className="flex-1 overflow-y-auto p-4 h-4/6">
+          <Card className="flex-1 overflow-y-auto md:p-4 py-4">
             <CardContent>
               {messages
                 .filter(
@@ -154,7 +182,7 @@ const Chat = ({ token }: { token: string | null }) => {
           </div>
         </div>
       ) : (
-        <div className="flex flex-1 flex-col items-center justify-center">
+        <div className="max-sm:hidden max-sm:invisible flex flex-1 flex-col items-center justify-center">
           <Image src={logoMain} alt="Image" className="w-60" />
           <h2>TeamSync App</h2>
         </div>
@@ -180,7 +208,7 @@ const Chat = ({ token }: { token: string | null }) => {
 
       {callState === "in-call" && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80">
-          <div className="w-[100vw] h-[100vh] bg-gray-900 p-4 flex flex-col items-center">
+          <div className="w-[100vw] h-[100vh] bg-gray-900 md:p-4 flex flex-col items-center">
             <div className="relative w-full h-full">
               {/* Remote Video */}
               <div className="w-full h-full bg-black ">
@@ -193,14 +221,14 @@ const Chat = ({ token }: { token: string | null }) => {
                     }}
                     autoPlay
                     playsInline
-                    className="w-full h-full object-cover rounded-lg"
+                    className="w-full h-full object-cover md:rounded-lg"
                     style={{ transform: "scaleX(-1)" }}
                     muted={!isAudioEnabled}
                   />
                 )}
               </div>
               {/* Local Video */}
-              <div className="absolute bottom-4 right-4 w-60 h-48 rounded-lg">
+              <div className="absolute max-sm:top-4 md:bottom-4 right-4 w-32 md:w-60 h-48 rounded-lg">
                 {myStream && (
                   <video
                     ref={(video) => {
