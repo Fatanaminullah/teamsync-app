@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -89,7 +90,6 @@ export function LoginForm({
                     id="name"
                     type="text"
                     placeholder="Input your name"
-                    required
                     {...field}
                   />
                 </FormControl>
