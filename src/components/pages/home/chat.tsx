@@ -19,9 +19,12 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 
+import logoMainDark from "@/public/img/img_logo-inverted.png";
 import logoMain from "@/public/img/img_logo-main.png";
+import { useTheme } from "next-themes";
 
 const Chat = ({ token }: { token: string | null }) => {
+  const { theme } = useTheme();
   const {
     sendMessage,
     onlineUsers,
@@ -62,13 +65,13 @@ const Chat = ({ token }: { token: string | null }) => {
           activeChat ? "max-sm:invisible max-sm:hidden" : ""
         )}
       >
-        <h2 className="text-lg font-bold">Chats</h2>
+        <h2 className="text-lg font-bold mb-4">Chats</h2>
         {Object.entries(onlineUsers)
           ?.filter(([name, user]) => name !== userAuth.name)
           .map(([name, user]) => (
             <div
               key={user.socketId}
-              className="max-sm:pb-1 border-b border-gray-200"
+              className="max-sm:pb-1 max-sm:border-b max-sm:border-gray-200"
             >
               <Button
                 variant={activeChat === name ? "outline" : "ghost"}
@@ -183,7 +186,11 @@ const Chat = ({ token }: { token: string | null }) => {
         </div>
       ) : (
         <div className="max-sm:hidden max-sm:invisible flex flex-1 flex-col items-center justify-center">
-          <Image src={logoMain} alt="Image" className="w-60" />
+          <Image
+            src={theme === "dark" ? logoMainDark : logoMain}
+            alt="Image"
+            className="w-60"
+          />
           <h2>TeamSync App</h2>
         </div>
       )}
@@ -193,12 +200,12 @@ const Chat = ({ token }: { token: string | null }) => {
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
             <PhoneIncoming className="w-12 h-12 text-green-500" />
-            <p className="font-bold text-lg">{caller} is calling...</p>
+            <p className="font-bold dark:text-black text-lg">{caller} is calling...</p>
             <div className="flex space-x-4 mt-4">
-              <Button onClick={acceptCall} className="bg-green-500 text-white">
+              <Button onClick={acceptCall} variant="success">
                 Accept
               </Button>
-              <Button onClick={rejectCall} className="bg-red-500 text-white">
+              <Button onClick={rejectCall} variant="destructive">
                 Reject
               </Button>
             </div>
