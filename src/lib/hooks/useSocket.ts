@@ -235,7 +235,7 @@ export const useSocket = (token: string | null) => {
   }, []);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || !user) return;
 
     const newSocket = io(SOCKET_URL, {
       secure: true,
@@ -253,6 +253,7 @@ export const useSocket = (token: string | null) => {
     newSocket.on("message", async (message: Message) => {
       switch (message.content.type) {
         case "chat":
+          if (message.content.to !== user.name) return;
           toast(message?.name, {
             description: message?.content?.content,
             duration: 5000,
@@ -261,6 +262,7 @@ export const useSocket = (token: string | null) => {
           addMessage(message);
           break;
         case "call":
+          if (message.content.to !== user.name) return;
           handleIncomingCall({ ...message, socket: newSocket });
           break;
         case "call-received":
@@ -296,7 +298,7 @@ export const useSocket = (token: string | null) => {
     return () => {
       newSocket.disconnect();
     };
-  }, [token]);
+  }, [token, user]);
 
   useEffect(() => {
     if (peer.peer) {
