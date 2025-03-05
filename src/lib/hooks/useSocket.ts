@@ -140,7 +140,6 @@ export const useSocket = (token: string | null) => {
       },
     });
     setCallState("idle");
-
   }, [myStream, socket]);
 
   const handleIncomingCall = async ({
@@ -214,34 +213,10 @@ export const useSocket = (token: string | null) => {
     [sendStreams]
   );
 
-  const handleNegoNeeded = useCallback(async () => {
-    try {
-      console.log("NEGO NEEDED", socket);
-      const offer = await peer.getOffer();
-      if (!socket || !caller) {
-        console.warn("Socket or caller not available for negotiation");
-        return;
-      }
-      socket.emit("message", {
-        name: user.name,
-        content: {
-          to: caller,
-          from: user.name,
-          type: "nego-needed",
-          offer,
-        },
-      });
-    } catch (error) {
-      console.error("Negotiation error:", error);
-    }
-  }, [socket, caller, user?.name]);
-
   const handleNegoNeededIncoming = useCallback(
     async ({ content, socket }: Message & { socket: Socket }) => {
       const { offer, from } = content;
-      console.log("NEGO INCOMING", offer);
       const ans = await peer.getAnswer(offer);
-      console.log("GOT ANSWER AFTER NEGO?", ans);
       socket?.emit("message", {
         name: user.name,
         content: {
@@ -256,7 +231,6 @@ export const useSocket = (token: string | null) => {
   );
 
   const handleNegoFinal = useCallback(async ({ content: { ans } }: Message) => {
-    console.log("NEGO DONE", ans);
     await peer.setRemoteDescription(ans, "handleNegoFinal");
   }, []);
 
@@ -264,6 +238,8 @@ export const useSocket = (token: string | null) => {
     if (!token) return;
 
     const newSocket = io(SOCKET_URL, {
+      secure: true,
+      rejectUnauthorized: true,
       extraHeaders: { authorization: `Bearer ${token}` },
     });
 
@@ -275,8 +251,6 @@ export const useSocket = (token: string | null) => {
       setOnlineUsers(users);
     });
     newSocket.on("message", async (message: Message) => {
-      console.log("incoming!", message.content);
-      console.log("type!", message.content.type);
       switch (message.content.type) {
         case "chat":
           toast(message?.name, {

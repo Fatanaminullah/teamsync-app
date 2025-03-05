@@ -22,6 +22,7 @@ import { useState } from "react";
 import logoMainDark from "@/public/img/img_logo-inverted.png";
 import logoMain from "@/public/img/img_logo-main.png";
 import { useTheme } from "next-themes";
+import { sanitizeInput } from "@/lib/utils/sanitize";
 
 const Chat = ({ token }: { token: string | null }) => {
   const { theme } = useTheme();
@@ -55,7 +56,6 @@ const Chat = ({ token }: { token: string | null }) => {
       setMessage("");
     }
   };
-  console.log("messages", messages);
   return (
     <div className="flex h-[calc(100vh_-_100px)]">
       {/* Sidebar */}
@@ -165,7 +165,7 @@ const Chat = ({ token }: { token: string | null }) => {
                       {msg.content.from !== userAuth.name && (
                         <span className="font-bold">{msg.name}:</span>
                       )}
-                      {msg.content.content}
+                      {sanitizeInput(msg.content.content)}
                     </div>
                   </div>
                 ))}
@@ -200,7 +200,9 @@ const Chat = ({ token }: { token: string | null }) => {
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
             <PhoneIncoming className="w-12 h-12 text-green-500" />
-            <p className="font-bold dark:text-black text-lg">{caller} is calling...</p>
+            <p className="font-bold dark:text-black text-lg">
+              {caller} is calling...
+            </p>
             <div className="flex space-x-4 mt-4">
               <Button onClick={acceptCall} variant="success">
                 Accept
