@@ -219,17 +219,23 @@ const Chat = ({ token }: { token: string | null }) => {
           <div className="w-[100vw] h-[100vh] bg-gray-900 md:p-4 flex flex-col items-center">
             <div className="relative w-full h-full">
               {/* Remote Video */}
-              <div className="w-full h-full bg-black ">
+              <div className="w-full h-full bg-black">
                 {remoteStream && (
                   <video
                     ref={(video) => {
                       if (video) {
                         video.srcObject = remoteStream;
+                        // Get video track settings
+                        const videoTrack = remoteStream.getVideoTracks()[0];
+                        const settings = videoTrack.getSettings();
+                        const width = settings.width ?? 0;
+                        const height = settings.height ?? 0;
+                        video.style.objectFit = width > height ? 'cover' : 'contain';
                       }
                     }}
                     autoPlay
                     playsInline
-                    className="w-full h-full object-cover md:rounded-lg"
+                    className="w-full h-full md:rounded-lg"
                     style={{ transform: "scaleX(-1)" }}
                     muted={!isAudioEnabled}
                   />
