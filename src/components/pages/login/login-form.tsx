@@ -10,7 +10,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuthStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,13 +59,15 @@ export function LoginForm({
     });
     const loginResponse = await login.json();
     if (!login.ok) {
-      return toast.error(loginResponse.message);
-    }
-    setUser({ name, room });
-    setTimeout(() => {
       setLoading(false);
-      router.replace("/");
-    }, 2000);
+      toast.error(loginResponse.message);
+    } else {
+      setUser({ name, room });
+      setTimeout(() => {
+        setLoading(false);
+        router.replace("/");
+      }, 2000);
+    }
   }
 
   return (
@@ -110,9 +118,10 @@ export function LoginForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="room1">Room 1</SelectItem>
-                    <SelectItem value="room2">Room 2</SelectItem>
-                    <SelectItem value="room3">Room 3</SelectItem>
+                    <SelectItem value="room-1">Room 1</SelectItem>
+                    <SelectItem value="room-2">Room 2</SelectItem>
+                    <SelectItem value="room-3">Room 3</SelectItem>
+                    <SelectItem value="room-testing">Room Testing</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
