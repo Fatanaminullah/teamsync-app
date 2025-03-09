@@ -12,17 +12,18 @@ import {
   MicOff,
   PhoneIncoming,
   PhoneOff,
+  PhoneOutgoing,
   UserCircle,
   Video,
   VideoOff,
 } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
+import { sanitizeInput } from "@/lib/utils/sanitize";
 import logoMainDark from "@/public/img/img_logo-inverted.png";
 import logoMain from "@/public/img/img_logo-main.png";
 import { useTheme } from "next-themes";
-import { sanitizeInput } from "@/lib/utils/sanitize";
 
 const Chat = ({ token }: { token: string | null }) => {
   const { theme } = useTheme();
@@ -55,9 +56,7 @@ const Chat = ({ token }: { token: string | null }) => {
       setMessage("");
     }
   };
-  useEffect(() => {
-    console.log("stream", myStream, remoteStream);
-  }, [myStream, remoteStream]);
+  console.log("CALL STATE", callState);
   return (
     <div className="flex h-[calc(100svh_-_100px)]">
       {/* Sidebar */}
@@ -213,6 +212,16 @@ const Chat = ({ token }: { token: string | null }) => {
                 Reject
               </Button>
             </div>
+          </div>
+        </div>
+      )}
+      {callState === "calling" && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <PhoneOutgoing className="w-12 h-12 text-green-500" />
+            <p className="font-bold dark:text-black text-lg">
+              Calling {activeChat}...
+            </p>
           </div>
         </div>
       )}
