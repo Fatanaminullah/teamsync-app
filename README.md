@@ -26,8 +26,8 @@ A real-time team collaboration app with chat and video call features.
 
 ## Live Demo
 
-App: [https://teamsync-app.netlify.app/](https://teamsync-app.netlify.app/)  
-Storybook: [https://teamsync-storybook.netlify.app/](https://teamsync-storybook.netlify.app/)
+App: [https://teamsync-app.netlify.app/](https://teamsync-app.netlify.app/){:target="_blank"}  
+Storybook: [https://teamsync-storybook.netlify.app/](https://teamsync-storybook.netlify.app/){:target="_blank"}
 
 To test multi-user functionality:
 1. Open the app in your main browser window
