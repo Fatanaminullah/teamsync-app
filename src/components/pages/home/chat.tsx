@@ -123,7 +123,7 @@ const Chat = ({ token }: { token: string | null }) => {
               <UserCircle className="!w-10 !h-10 md:hidden" />
               <div className="flex flex-col">
                 <h2 className="text-lg font-bold">{`${activeChat}`}</h2>
-                <p className="text-xs md:hidden">
+                <p className="text-xs">
                   {onlineUsers?.[activeChat]?.online ? "Online" : "Offline"}
                 </p>
               </div>

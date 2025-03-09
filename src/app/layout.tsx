@@ -28,14 +28,14 @@ export const metadata: Metadata = {
     description:
       "Connect and collaborate with your team through instant messaging and video calls.",
     type: "website",
-    images: ["/richlink.png"],
+    images: [`${process.env.SITE_URL}/richlink.png`],
   },
   twitter: {
     card: "summary_large_image",
     title: "TeamSyncApp | Real-time Team Collaboration",
     description:
       "Connect and collaborate with your team through instant messaging and video calls.",
-    images: ["/richlink.png"],
+    images: [`${process.env.SITE_URL}/richlink.png`],
   },
 };
 
