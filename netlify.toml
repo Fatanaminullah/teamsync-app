@@ -1,6 +1,0 @@
-[build]
-  command = "npm install && npm run build-storybook"
-  publish = "storybook-static"
-
-[build.environment]
-  NODE_VERSION = "20"
