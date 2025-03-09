@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useCallback, useEffect, useState } from "react";
-import { Message, useAuthStore, useChatStore } from "../store";
-import { io, Socket } from "socket.io-client";
 import peer from "@/lib/service/peer";
-import { SOCKET_URL } from "../constant";
+import { useCallback, useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
 import { toast } from "sonner";
+import { SOCKET_URL } from "../constant";
+import { Message, useAuthStore, useChatStore } from "../store";
 
-type CallState = "idle" | "calling" | "receiving" | "in-call";
+type CallState = "idle" | "calling" | "receiving" | "in-call" | "ending";
 
 export const useSocket = (token: string | null) => {
   const { user } = useAuthStore();
@@ -123,7 +123,8 @@ export const useSocket = (token: string | null) => {
     setCallState("idle");
   };
 
-  const endCall = useCallback(() => {
+  const endCall = () => {
+    console.log("ENDING CALL", myStream, remoteStream);
     peer?.peer?.close();
 
     if (myStream) {
@@ -141,8 +142,11 @@ export const useSocket = (token: string | null) => {
         type: "call-end",
       },
     });
+    peer.toggleVideo();
+    peer.toggleAudio();
+
     setCallState("idle");
-  }, [myStream, socket]);
+  };
 
   const handleIncomingCall = async ({
     content,
@@ -197,22 +201,21 @@ export const useSocket = (token: string | null) => {
     [sendStreams]
   );
 
-  const handleCallEnded = useCallback(
-    ({ content }: Message) => {
-      if (content.from === user.name) {
-        peer?.peer?.close();
+  const handleCallEnded = () => {
+    // Clean up for both users
+    console.log("CALL ENDED", myStream, remoteStream);
+    peer?.peer?.close();
+    if (myStream) {
+      myStream.getTracks().forEach((track) => track.stop());
+    }
+    setMyStream(undefined);
+    setRemoteStream(undefined);
 
-        if (myStream) {
-          myStream.getTracks().forEach((track) => track.stop());
-          setMyStream(undefined);
-        }
+    peer.toggleVideo();
+    peer.toggleAudio();
 
-        setRemoteStream(undefined);
-      }
-      setCallState("idle");
-    },
-    [sendStreams]
-  );
+    setCallState("idle");
+  };
 
   const handleNegoNeededIncoming = useCallback(
     async ({ content, socket }: Message & { socket: Socket }) => {
@@ -278,7 +281,7 @@ export const useSocket = (token: string | null) => {
           toast("Call rejected");
           break;
         case "call-end":
-          handleCallEnded(message);
+          setCallState("ending");
           break;
         case "nego-needed":
           handleNegoNeededIncoming({ ...message, socket: newSocket });
@@ -342,6 +345,12 @@ export const useSocket = (token: string | null) => {
       };
     }
   }, [peer.peer, socket, caller, user?.name]);
+
+  useEffect(() => {
+    if (myStream && remoteStream && callState === "ending") {
+      handleCallEnded();
+    }
+  }, [myStream, remoteStream, callState]);
 
   return {
     sendMessage,

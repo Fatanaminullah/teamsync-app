@@ -17,7 +17,7 @@ import {
   VideoOff,
 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import logoMainDark from "@/public/img/img_logo-inverted.png";
 import logoMain from "@/public/img/img_logo-main.png";
@@ -55,13 +55,16 @@ const Chat = ({ token }: { token: string | null }) => {
       setMessage("");
     }
   };
+  useEffect(() => {
+    console.log("stream", myStream, remoteStream);
+  }, [myStream, remoteStream]);
   return (
     <div className="flex h-[calc(100svh_-_100px)]">
       {/* Sidebar */}
       <aside
         className={cn(
           "md:w-64 w-full md:bg-gray-100 dark:md:bg-gray-800 md:p-4",
-          activeChat ? "max-sm:invisible max-sm:hidden" : ""
+          activeChat ? "max-md:invisible max-md:hidden" : ""
         )}
       >
         <h2 className="text-lg font-bold mb-4">Chats</h2>
@@ -70,7 +73,7 @@ const Chat = ({ token }: { token: string | null }) => {
           .map(([name, user]) => (
             <div
               key={user.socketId}
-              className="max-sm:pb-1 max-sm:border-b max-sm:border-gray-200"
+              className="max-md:pb-1 max-md:border-b max-md:border-gray-200"
             >
               <Button
                 variant={activeChat === name ? "outline" : "ghost"}
@@ -108,8 +111,8 @@ const Chat = ({ token }: { token: string | null }) => {
       {activeChat ? (
         <div
           className={cn(
-            "flex-1 md:p-4 flex flex-col max-sm:translate-x-full transition-transform",
-            activeChat ? "max-sm:translate-x-0" : ""
+            "flex-1 md:p-4 flex flex-col max-md:translate-x-full transition-transform",
+            activeChat ? "max-md:translate-x-0" : ""
           )}
         >
           <div className="flex justify-between items-center mb-4">
@@ -184,7 +187,7 @@ const Chat = ({ token }: { token: string | null }) => {
           </div>
         </div>
       ) : (
-        <div className="max-sm:hidden max-sm:invisible flex flex-1 flex-col items-center justify-center">
+        <div className="max-md:hidden max-md:invisible flex flex-1 flex-col items-center justify-center">
           <Image
             src={theme === "dark" ? logoMainDark : logoMain}
             alt="Image"
@@ -236,7 +239,7 @@ const Chat = ({ token }: { token: string | null }) => {
                 )}
               </div>
               {/* Local Video */}
-              <div className="absolute max-sm:top-4 md:bottom-4 right-4 w-32 md:w-60 h-48 rounded-lg">
+              <div className="absolute max-md:top-4 md:bottom-4 right-4 w-32 md:w-60 h-48 rounded-lg">
                 {myStream && (
                   <video
                     ref={(video) => {
