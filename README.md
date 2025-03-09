@@ -28,7 +28,7 @@ A real-time team collaboration app with chat and video call features.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/teamsync.git
+git clone https://github.com/fatanaminullah/teamsync.git
 cd teamsync
 ```
 
@@ -39,7 +39,7 @@ npm install
 
 3. Create a `.env.local` file:
 ```env
-SOCKET_URL=your_socket_server_url
+SOCKET_URL=https://teamsync-socket.onrender.com
 ANALYZE=true or false to run analyze bundle size
 ```
 
