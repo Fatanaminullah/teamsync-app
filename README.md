@@ -24,26 +24,44 @@ A real-time team collaboration app with chat and video call features.
 - **Testing:** Vitest + Testing Library
 - **Documentation:** Storybook
 
+## Live Demo
+
+[https://teamsync-app.netlify.app/](https://teamsync-app.netlify.app/)
+
+To test multi-user functionality:
+
+1. Open the app in your main browser window
+2. Open a new incognito/private window (or different browser) for the second user
+   - Chrome: `Ctrl/⌘ + Shift + N`
+   - Firefox: `Ctrl/⌘ + Shift + P`
+   - Safari: `⌘ + Shift + N`
+
+This is necessary because the app uses cookies for authentication, and multiple logins in the same browser window will conflict.
+
 ## Getting Started
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/fatanaminullah/teamsync.git
 cd teamsync
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Create a `.env.local` file:
+
 ```env
 SOCKET_URL=https://teamsync-socket.onrender.com
 ANALYZE=true or false to run analyze bundle size
 ```
 
 4. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -53,11 +71,13 @@ npm run dev
 ## Testing
 
 Run unit tests:
+
 ```bash
 npm test
 ```
 
 Run Storybook:
+
 ```bash
 npm run storybook
 ```

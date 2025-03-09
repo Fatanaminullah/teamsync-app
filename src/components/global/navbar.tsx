@@ -30,7 +30,7 @@ export default function Navbar() {
     window.location.reload();
   };
   return (
-    <div className="w-full fixed top-0 left-0 bg-white">
+    <div className="w-full fixed top-0 left-0 bg-background">
       <div className="container flex justify-between items-center h-20">
         <a href="#" className="flex items-center gap-1 font-medium">
           <Image src={favicon} alt="Image" className="w-6 h-6" />

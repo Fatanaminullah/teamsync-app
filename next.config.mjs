@@ -9,6 +9,7 @@ const nextConfig = {
   env: {
     SOCKET_URL: process.env.SOCKET_URL,
     ANALYZE: process.env.ANALYZE,
+    SITE_URL: process.env.SITE_URL,
   },
   async headers() {
     return [
