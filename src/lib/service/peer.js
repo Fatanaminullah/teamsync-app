@@ -76,14 +76,30 @@ class PeerService {
   }
 
   toggleAudio = () => {
-    const audioTracks = this.peer
-      .getSenders()
-      .find((sender) => sender.track.kind === "audio").track;
-    audioTracks.enabled = !audioTracks.enabled;
+    try {
+      // Toggle sender track
+      const audioSender = this.peer
+        .getSenders()
+        .find((sender) => sender.track?.kind === "audio");
 
-    // Mute the local audio track
-    const localAudioTrack = this.peer.getLocalStreams()[0].getAudioTracks()[0];
-    localAudioTrack.enabled = !localAudioTrack.enabled;
+      if (audioSender?.track) {
+        audioSender.track.enabled = !audioSender.track.enabled;
+      }
+
+      // Toggle local stream track
+      const localStream = this.peer.getLocalStreams()[0];
+      if (localStream) {
+        const localAudioTrack = localStream.getAudioTracks()[0];
+        if (localAudioTrack) {
+          localAudioTrack.enabled = !localAudioTrack.enabled;
+        }
+      }
+
+      return audioSender?.track?.enabled;
+    } catch (error) {
+      console.error("Error toggling audio:", error);
+      return false;
+    }
   };
 
   toggleVideo = () => {

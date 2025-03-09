@@ -56,7 +56,7 @@ const Chat = ({ token }: { token: string | null }) => {
     }
   };
   return (
-    <div className="flex h-[calc(100vh_-_100px)]">
+    <div className="flex h-[calc(100svh_-_100px)]">
       {/* Sidebar */}
       <aside
         className={cn(
