@@ -102,6 +102,7 @@ export const useSocket = (token: string | null) => {
 
         setCallState("in-call");
       } catch (error) {
+        toast.error(`Error accepting call", ${JSON.stringify(error)}`);
         console.error("Error accepting call:", error);
       }
     }
